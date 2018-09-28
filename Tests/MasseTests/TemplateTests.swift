@@ -55,7 +55,6 @@ goobye
  </html>
  """
         let parser = TemplateVariablesParser(contents: template, sections: [:], variables: variables, context: context)
-        print(parser.retrieve())
         XCTAssertEqual(parser.retrieve(), """
 <html>
 <b>1 of hans with age 55 in 1</b>
