@@ -16,8 +16,8 @@ in the `Sources/Masse` folder.
 
 You can generate an xcode project via:
 
-```
-swift package generate-xcodeproject
+```bash
+$ swift package generate-xcodeproj
 ```
 
 # Building
