@@ -77,10 +77,14 @@ goobye
  - author: Bas Broek / Benedikt Terhechte
  - description: This is a long description with a really long description and another long description.
  ---
- <h1>These are the show notes</h1>
- <p> with some text
- and some more text</p>
- <strong>the end</strong>
+ # These are the show notes
+ - name: url
+ - name: url
+
+ - name: url
+
+ # New notes
+ - name: url
  """
         let parser = ConfigEntryParser(contents: entry, keys: Keys.PodcastEntry.allCases.map { $0.rawValue }, overflowKey: Keys.PodcastEntry.notes.rawValue)
         let dict = parser.retrieve()
@@ -90,10 +94,26 @@ goobye
         XCTAssertEqual(dict["duration"], "00:33:22")
         XCTAssertEqual(dict["length"], "404")
         XCTAssertEqual(dict["notes"], """
-<h1>These are the show notes</h1>
-<p> with some text
-and some more text</p>
-<strong>the end</strong>
+<div>
+  <p>
+    <h3>These are the show notes</h3>
+    <ul>
+      <li><a href="url">name</a></li>
+      <li><a href="url">name</a></li>
+    </ul>
+
+    <ul>
+      <li><a href="url">name</a></li>
+    </ul>
+  </p>
+
+  <p>
+    <h3>New notes</h3>
+    <ul>
+      <li><a href="url">name</a></li>
+    </ul>
+  </p>
+</div>
 
 """)
     }
