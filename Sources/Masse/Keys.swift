@@ -4,7 +4,7 @@ enum Keys {
 
     }
     enum PodcastEntry: String, CaseIterable {
-                       case nr, title, date, file, duration, length, author, description, notes
+        case nr, title, date, file, duration, length, author, description, notes
     }
 }
 
