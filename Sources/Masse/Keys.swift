@@ -1,10 +1,10 @@
 enum Keys {
     enum Configuration: String, CaseIterable {
-    case templateFolder, podcastEntriesFolder, podcastTargetFolder, podcastTitle, entriesTemplate, podcastLink, podcastDescription, podcastKeywords, iTunesOwner, iTunesEmail, linkiTunes, linkOvercast, linkTwitter, linkPocketCasts, podcastAuthor
+    case templateFolder, podcastEntriesFolder, podcastTargetFolder, podcastTitle, entriesTemplate, podcastLink, podcastDescription, podcastKeywords, iTunesOwner, iTunesEmail, linkiTunes, linkOvercast, linkTwitter, linkPocketCasts, podcastAuthor, mp3FilesFolder
 
     }
     enum PodcastEntry: String, CaseIterable {
-                       case nr, title, date, file, duration, length, author, description, notes
+        case nr, title, date, file, duration, length, author, description, notes
     }
 }
 

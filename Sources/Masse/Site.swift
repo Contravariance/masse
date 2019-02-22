@@ -26,7 +26,7 @@ struct Site {
             let url = URL(fileURLWithPath: "\(configuration.podcastEntriesFolder)/\(file)")
             guard url.pathExtension == "bacf" else { continue }
             let parsed = try ConfigEntryParser(url: url, keys: Keys.PodcastEntry.allCases.map { $0.rawValue }, overflowKey: Keys.PodcastEntry.notes.rawValue)
-            let entry = PodcastEntry(meta: parsed.retrieve(), filename: file)
+            let entry = PodcastEntry(meta: parsed.retrieve(), filename: file, folder: configuration.mp3FilesFolder)
             entries.append(entry)
         }
     }
