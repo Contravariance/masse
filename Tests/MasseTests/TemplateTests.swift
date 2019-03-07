@@ -93,29 +93,7 @@ goobye
         XCTAssertEqual(dict["file"], "something.mp3")
         XCTAssertEqual(dict["duration"], "00:33:22")
         XCTAssertEqual(dict["length"], "404")
-        XCTAssertEqual(dict["notes"], """
-<div>
-  <p>
-    <h3>These are the show notes</h3>
-    <ul>
-      <li><a href="url">name</a></li>
-      <li><a href="url">name</a></li>
-    </ul>
-
-    <ul>
-      <li><a href="url">name</a></li>
-    </ul>
-  </p>
-
-  <p>
-    <h3>New notes</h3>
-    <ul>
-      <li><a href="url">name</a></li>
-    </ul>
-  </p>
-</div>
-
-""")
+        XCTAssertEqual(dict["notes"], "<h1>These are the show notes</h1><ul><li>name: url</li><li>name: url</li></ul><ul><li>name: url</li></ul><h1>New notes</h1><ul><li>name: url</li></ul>")
     }
     
     
