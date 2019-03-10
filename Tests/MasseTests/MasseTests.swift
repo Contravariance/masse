@@ -1,6 +1,8 @@
 import XCTest
 @testable import Masse
 
+import Foundation
+
 final class MasseTests: XCTestCase {
     func testArguments() {
         XCTAssertEqual(arguments(for: ["a", "b", "--", "c"]), ["c"])

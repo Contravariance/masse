@@ -18,32 +18,26 @@ struct ConfigEntryParser {
     }
     
     func retrieve() -> [String: String] {
-        var hasReachedSeparator = false
         var result: [String: String] = [:]
-        var noteLines: [String] = []
-        var pos = 0
+        guard let offsetToSeparator = contents.range(of: "\n\(separator)\n") else {
+            fatalError("Invalid file, no separator")
+        }
         for line in contents.components(separatedBy: .newlines) {
-            if hasReachedSeparator {
-                noteLines.append(line)
-                let remainder = String(contents[contents.index(contents.startIndex, offsetBy: pos)..<contents.endIndex])
-                print(remainder)
-                let parser = MiniMarkdownParser()
-                overflowKey.map { result[$0] = parser.parseHTML(remainder) }
-                break
-            } else {
-                for key in keys {
-                    let start = "\(metaPrefix)\(key)\(metaSeparator)"
-                    if line.starts(with: start),
-                        let range = line.range(of: metaSeparator) {
-                        result[key] = String(line[range.upperBound..<line.endIndex])
-                    }
-                }
-                if line == separator && overflowKey != nil {
-                    hasReachedSeparator = true
+            for key in keys {
+                let start = "\(metaPrefix)\(key)\(metaSeparator)"
+                if line.starts(with: start),
+                    let range = line.range(of: metaSeparator) {
+                    result[key] = String(line[range.upperBound..<line.endIndex])
                 }
             }
-            pos += line.count + 1
+            if line == separator && overflowKey != nil {
+                break
+            }
         }
+        let remainder = String(contents[offsetToSeparator.upperBound..<contents.endIndex])
+        let parser = MiniMarkdownParser()
+        overflowKey.map { result[$0] = parser.parseHTML(remainder) }
+
         return result
     }
 }

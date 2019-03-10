@@ -15,4 +15,23 @@ extension String {
         let endIndex = self.index(self.startIndex, offsetBy: endPosition)
         return String(self[beginIndex..<endIndex])
     }
+
+    /// Split into lines by `\n` however keep empty lines as empty strings
+    func splitWithBreaks() -> [Substring] {
+        var results: [Substring] = []
+        var (lowerIndex, upperIndex) = (startIndex, startIndex)
+        while upperIndex < endIndex {
+            if self[upperIndex] == "\n" {
+                let transformedIndex = lowerIndex
+                results.append(self[transformedIndex..<upperIndex])
+                lowerIndex = self.index(after: upperIndex)
+            }
+            upperIndex = index(after: upperIndex)
+        }
+
+        if lowerIndex < endIndex {
+            results.append(self[lowerIndex..<endIndex])
+        }
+        return results
+    }
 }

@@ -14,108 +14,108 @@ final class MinimarkdownTests: XCTestCase {
     }
 
     func testHTMLRefs1() {
-        XCTAssert(
+        XCTAssertEqual(
             convertHTMLRefs("this is a [url](http://heise.de)")
-                ==
+            ,
             "this is a <a href='http://heise.de'>url</a>"
         )
     }
 
     func testHTMLRefs2() {
-        XCTAssert(
+        XCTAssertEqual(
             convertHTMLRefs("this is a [url](http://heise.de) with more")
-                ==
+            ,
             "this is a <a href='http://heise.de'>url</a> with more"
         )
     }
 
     func testHTMLRefs3() {
-        XCTAssert(
+        XCTAssertEqual(
             convertHTMLRefs("oh [these](a) are [two](b) [urls](c)")
-                ==
+            ,
             "oh <a href='a'>these</a> are <a href='b'>two</a> <a href='c'>urls</a>"
         )
     }
 
     func testHTMLRefs4() {
-        XCTAssert(
+        XCTAssertEqual(
             convertHTMLRefs("pure content")
-                ==
+            ,
             "pure content"
         )
     }
 
     func testHTMLRefs5() {
-        XCTAssert(
+        XCTAssertEqual(
             convertHTMLRefs("[hui](test)")
-                ==
+            ,
             "<a href='test'>hui</a>"
         )
     }
 
     func testHTMLRefs6() {
-        XCTAssert(
+        XCTAssertEqual(
             convertHTMLRefs("[hui](test)[huihui](testtest)")
-                ==
+            ,
             "<a href='test'>hui</a><a href='testtest'>huihui</a>"
         )
     }
 
     func testHTMLRefs7() {
-        XCTAssert(
+        XCTAssertEqual(
             convertHTMLRefs("![hello](/img.jpg)")
-                ==
+            ,
             "<img src='/img.jpg' alt='hello' />"
         )
     }
 
     func testHTMLRefs8() {
-        XCTAssert(
+        XCTAssertEqual(
             convertHTMLRefs("an ![hello](/img.jpg) image")
-                ==
+             ,
             "an <img src='/img.jpg' alt='hello' /> image"
         )
     }
 
     func testHTMLRefs9() {
-        XCTAssert(
+        XCTAssertEqual(
             convertHTMLRefs("the [^on] is on")
-                ==
+            ,
             "the <a href='#on'>[on]</a> is on"
         )
     }
 
     func testSplitWithBreaks() {
         let content = "a\n\nb\nc\nd\n\ne"
-        let parsed = splitWithBreaks(lines: content)
-        XCTAssert(parsed == ["a", "", "b", "c", "d", "", "e"])
+        let parsed = content.splitWithBreaks()
+        XCTAssertEqual(parsed, ["a", "", "b", "c", "d", "", "e"])
     }
 
     func testSplitWithBreaksNoBreaks() {
         let content = "# test"
-        let parsed = splitWithBreaks(lines: content)
-        XCTAssert(parsed == ["# test"])
+        let parsed = content.splitWithBreaks()
+        XCTAssertEqual(parsed, ["# test"])
     }
 
     func testMarkdownTitle1() {
-        XCTAssert(convertMarkdown("# test") == "<h1>test</h1>")
+        XCTAssertEqual(convertMarkdown("# test"), "<h1>test</h1>")
     }
 
     func testMarkdownTitle2() {
-        XCTAssert(convertMarkdown("## test") == "<h2>test</h2>")
+        XCTAssertEqual(convertMarkdown("## test"), "<h2>test</h2>")
     }
 
     func testMarkdownList() {
-        XCTAssert(convertMarkdown("- a\n- b") == "<ul><li>a</li><li>b</li></ul>")
+        XCTAssertEqual(convertMarkdown("- a\n- b"), "<ul><li>a</li><li>b</li></ul>")
     }
 
     func testMarkdownParagraphs1() {
-        XCTAssert(MiniMarkdownParser().parseHTML("ab\ncd\n\nef") ==
+        XCTAssertEqual(MiniMarkdownParser().parseHTML("ab\ncd\n\nef"),
         "<p>ab<br/>cd</p><p>ef</p>")
     }
 
     func testMarkdownParagraphs2() {
-        XCTAssert(MiniMarkdownParser().parseHTML("ab\n\ncd\n\nef") ==
+        XCTAssertEqual(MiniMarkdownParser().parseHTML("ab\n\ncd\n\nef"),
             "<p>ab</p><p>cd</p><p>ef</p>")
     }
 
@@ -140,7 +140,8 @@ longer pargraph
 
 [^1] Footnote 1. Done.
 """
-        print(MiniMarkdownParser().parseHTML(content))
+        let expected = "<h1>First Headline</h1><p><img src='paragraph' alt='paragraph' />, paragrahp<br/>paragraph</p><p>paragraph <a href='paragraph'>paragraph</a><br/>paragraph</p><h2>Second headline <a href='#1'>[1]</a></h2><ul><li>List 1</li><li>List 2</li><li>list 3</li></ul><h3>Third headline</h3><p>longer pargraph</p><div><strong><a name='1'>[1]:</a></strong> Footnote 1. Done.</div>"
+        XCTAssertEqual(expected, MiniMarkdownParser().parseHTML(content))
     }
 
     private func convertHTMLRefs(_ content: String) -> String {

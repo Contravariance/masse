@@ -1,24 +1,5 @@
 import Foundation
 
-/// Split into lines by `\n` however keep empty lines as empty strings
-internal func splitWithBreaks(lines: String) -> [Substring] {
-    var results: [Substring] = []
-    var (startIndex, currentIndex) = (lines.startIndex, lines.startIndex)
-    while currentIndex < lines.endIndex {
-        if lines[currentIndex] == "\n" {
-            let transformedIndex = startIndex
-            results.append(lines[transformedIndex..<currentIndex])
-            startIndex = lines.index(after: currentIndex)
-        }
-        currentIndex = lines.index(after: currentIndex)
-    }
-
-    if startIndex < lines.endIndex {
-        results.append(lines[startIndex..<lines.endIndex])
-    }
-    return results
-}
-
 internal struct MiniMarkdownParser {
     internal enum Element {
         case list(entries: [(index: Int, contents: Substring)])
@@ -131,7 +112,7 @@ internal struct MiniMarkdownParser {
             }
             lineCollector = []
         }
-        for line in splitWithBreaks(lines: markdown) {
+        for line in markdown.splitWithBreaks() {
             let headlineIndex = line.firstIndex(where: { $0 != "#" }) ?? line.startIndex
             let headlineLevel = headlineIndex.encodedOffset - line.startIndex.encodedOffset
             let isList = line.starts(with: "- ")
