@@ -39,14 +39,14 @@ enum MP3DurationError: Error {
 
 /// Lightweight wrapper around the seconds and nanoseconds
 /// that are encoded in an MP3 file
-struct Duration {
+public struct Duration {
     private var seconds: Double
     
-    var asSeconds: Double {
+    public var asSeconds: Double {
         return seconds
     }
     
-    var asMinutes: Double {
+    public var asMinutes: Double {
         return seconds / 60.0
     }
     
@@ -70,7 +70,7 @@ struct Duration {
 }
 
 extension Duration: CustomStringConvertible {
-    var description: String {
+    public var description: String {
         // NSDateComponentsFormatter could also be used
         let minutes: Double = seconds / 60.0
         let remainingSeconds = seconds.truncatingRemainder(dividingBy: 60.0)
@@ -82,7 +82,7 @@ extension Duration: CustomStringConvertible {
 
 /// Calculate the duration of an MP3 file
 /// Can be initialized with a `URL` or a `NSInputStream`. Note that the inputStream has to be opened!
-struct MP3DurationCalculator {
+public struct MP3DurationCalculator {
     
     private let inputStream: InputStream
     
@@ -231,7 +231,7 @@ struct MP3DurationCalculator {
     }
     
     /// Initialize the Calculator with an `URL` to an mp3 file
-    init(url: URL) throws {
+    public init(url: URL) throws {
         guard let inputStream = InputStream(url: url) else {
             throw MP3DurationError.invalidFile(url)
         }
@@ -241,12 +241,12 @@ struct MP3DurationCalculator {
     
     /// Initialize the Calculator with an `openend` `NSInputStream`. This is particularly
     /// useful as `NSInputStream`s can also be contructed from `NSData`
-    init(inputStream: InputStream) {
+    public init(inputStream: InputStream) {
         self.inputStream = inputStream
     }
     
     /// Calculate the duration of an MP3 file by parsing headers
-    func calculateDuration() throws -> Duration {
+    public func calculateDuration() throws -> Duration {
         let headerBufferLength = 4
         let headerBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: headerBufferLength)
         headerBuffer.initialize(repeating: 0, count: headerBufferLength)
