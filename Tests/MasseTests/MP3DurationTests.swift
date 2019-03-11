@@ -17,6 +17,7 @@ final class MP3DurationTests: XCTestCase {
             let fullPath = "\(folder)/\(path)"
             guard filemanager.fileExists(atPath: fullPath) else {
                 longAwfulErrorMessage()
+                return
             }
             newPaths[fullPath] = paths[path]
         }
@@ -41,7 +42,7 @@ final class MP3DurationTests: XCTestCase {
         ("testMp3Durations", testMp3Durations),
         ]
     
-    private func longAwfulErrorMessage() -> Never {
+    private func longAwfulErrorMessage() {
         let message = """
 
 
@@ -74,6 +75,6 @@ More info for the curious investigator:
 
 """
         print(message)
-        fatalError(message)
+        XCTFail(message)
     }
 }
