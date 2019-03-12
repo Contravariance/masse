@@ -16,8 +16,7 @@ final class MP3DurationTests: XCTestCase {
         for path in paths.keys {
             let fullPath = "\(folder)/\(path)"
             guard filemanager.fileExists(atPath: fullPath) else {
-                longAwfulErrorMessage()
-                return
+                return longAwfulErrorMessage()
             }
             newPaths[fullPath] = paths[path]
         }

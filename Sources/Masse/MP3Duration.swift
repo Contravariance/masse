@@ -14,7 +14,7 @@ enum InputStreamError: Error {
 }
 
 extension InputStream {
-    /// Read `length` into a buffer. Throw a `InputStreamError` on failure
+    /// Read `length` into a buffer. Throw an `InputStreamError` on failure
     func readInto(buffer: UnsafeMutablePointer<UInt8>, length: Int) throws {
         switch self.read(buffer, maxLength: length) {
         case 0: throw InputStreamError.endOfBuffer
@@ -27,6 +27,7 @@ extension InputStream {
 /// Various errors that can happen during MP3 decoding
 /// Especially for invalid MP3 files
 enum MP3DurationError: Error {
+    case streamNotOpen
     case invalidFile(URL)
     case forbiddenVersion(UInt32)
     case forbiddenLayer
@@ -40,13 +41,9 @@ enum MP3DurationError: Error {
 /// Lightweight wrapper around the seconds and nanoseconds
 /// that are encoded in an MP3 file
 public struct Duration {
-    private var seconds: Double
+    public private(set) var seconds: Double
     
-    public var asSeconds: Double {
-        return seconds
-    }
-    
-    public var asMinutes: Double {
+    public var minutes: Double {
         return seconds / 60.0
     }
     
@@ -82,6 +79,7 @@ extension Duration: CustomStringConvertible {
 
 /// Calculate the duration of an MP3 file
 /// Can be initialized with a `URL` or a `NSInputStream`. Note that the inputStream has to be opened!
+/// https://www.mp3-tech.org/programmer/frame_header.html
 public struct MP3DurationCalculator {
     
     private let inputStream: InputStream
@@ -93,7 +91,12 @@ public struct MP3DurationCalculator {
         case mpeg1, mpeg2, mpeg25
         
         static func fromHeader(_ header: UInt32) throws -> Version {
+            // Shift by 19 to reach the two bits at position 19, 20
+            // then and with 0b11000000 so that only position 19/20 stay
+            // and then convert them (00, 01, 10, 11) to a number
+            // its is the same for the code below
             let number = (header >> 19) & 0b11
+
             switch number {
             case 0: return .mpeg25
             case 2: return .mpeg2
@@ -211,7 +214,7 @@ public struct MP3DurationCalculator {
     
     /// Lightweight wrapper around a `UnsafeMutablePointer` in order to read unneeded
     /// data from a inputStream into something. This will resize the buffer according
-    // to the size requirements.
+    /// to the size requirements.
     private struct Dump {
         private var buffer: UnsafeMutablePointer<UInt8>
         private var size = 16 * 1024
@@ -230,23 +233,30 @@ public struct MP3DurationCalculator {
         }
     }
     
-    /// Initialize the Calculator with an `URL` to an mp3 file
+    /// Initialize the Calculator with a `URL` to an mp3 file
     public init(url: URL) throws {
         guard let inputStream = InputStream(url: url) else {
             throw MP3DurationError.invalidFile(url)
         }
         inputStream.open()
-        self.init(inputStream: inputStream)
+        try self.init(inputStream: inputStream)
     }
     
     /// Initialize the Calculator with an `openend` `NSInputStream`. This is particularly
     /// useful as `NSInputStream`s can also be contructed from `NSData`
-    public init(inputStream: InputStream) {
+    /// throws if the stream is not open
+    public init(inputStream: InputStream) throws {
+        guard inputStream.streamStatus == .open else {
+            throw MP3DurationError.streamNotOpen
+        }
         self.inputStream = inputStream
     }
     
     /// Calculate the duration of an MP3 file by parsing headers
     public func calculateDuration() throws -> Duration {
+        defer {
+            inputStream.close()
+        }
         let headerBufferLength = 4
         let headerBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: headerBufferLength)
         headerBuffer.initialize(repeating: 0, count: headerBufferLength)

@@ -26,20 +26,23 @@ struct PodcastEntry {
         self.meta["podcastDate"] = PodcastEntry.podcastDateFormatter.string(from: date)
         
         // calculate the duration
-        if let mp3Filename = meta[Keys.PodcastEntry.file.rawValue] {
-            let url = URL(fileURLWithPath: "\(folder)/\(mp3Filename)")
-            if let data = try? Data(contentsOf: url) {
-                self.meta[Keys.PodcastEntry.length.rawValue] = "\(data.count)"
-                let stream = InputStream(data: data)
-                do {
-                    stream.open()
-                    let calculator = MP3DurationCalculator(inputStream: stream)
-                    let duration = try calculator.calculateDuration()
-                    self.meta[Keys.PodcastEntry.duration.rawValue] = "\(duration)"
-                } catch let error {
-                    print("Could not caculate duration of MP3: \(mp3Filename)\n\t\(error)")
-                }
-            }
+        guard let mp3Filename = meta[Keys.PodcastEntry.file.rawValue] else {
+            return
+        }
+        let url = URL(fileURLWithPath: "\(folder)/\(mp3Filename)")
+        guard let data = try? Data(contentsOf: url) else {
+            print("Could not read mp3 file `\(url)`")
+            return
+        }
+        self.meta[Keys.PodcastEntry.length.rawValue] = "\(data.count)"
+        let stream = InputStream(data: data)
+        do {
+            stream.open()
+            let calculator = try MP3DurationCalculator(inputStream: stream)
+            let duration = try calculator.calculateDuration()
+            self.meta[Keys.PodcastEntry.duration.rawValue] = duration.description
+        } catch let error {
+            print("Could not caculate duration of MP3: \(mp3Filename)\n\t\(error)")
         }
     }
 }
