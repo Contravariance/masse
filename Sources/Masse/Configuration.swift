@@ -9,6 +9,8 @@ struct Configuration {
     var podcastTitle = ""
     /// The template to use for each entry
     var entriesTemplate = ""
+    /// The folder where the mp3 files are
+    var mp3FilesFolder = ""
     /// The remaining meta
     var meta: [String: String] = [:]
     
@@ -19,6 +21,7 @@ struct Configuration {
             (\Configuration.podcastEntriesFolder, .podcastEntriesFolder),
             (\Configuration.podcastTargetFolder, .podcastTargetFolder),
             (\Configuration.podcastTitle, .podcastTitle),
+            (\Configuration.mp3FilesFolder, .mp3FilesFolder),
             (\Configuration.entriesTemplate, .entriesTemplate)]
         for (keyPath, key) in entries {
             self[keyPath: keyPath] = parsed[key.rawValue].expect("Need \(key.rawValue) entry in configuration")
