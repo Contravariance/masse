@@ -13,22 +13,22 @@ internal struct MiniMarkdownParser {
             case .list(entries: let entries):
                 buffer.append("<ul>")
                 entries.forEach { entry in
-                    buffer.append("<li>\(convertRefs(entry.contents))</li>")
+                    buffer.append("<li>\(convertRefs(convertEmphasis(entry.contents)))</li>")
                 }
                 buffer.append("</ul>")
             case .paragraph(contents: let contents):
                 buffer.append("<p>")
-                buffer.append(contents.map { convertRefs($0) }.joined(separator: "<br/>"))
+                buffer.append(contents.map { convertRefs(convertEmphasis($0)) }.joined(separator: "<br/>"))
                 buffer.append("</p>")
             case .headline(level: let level, title: let title):
-                buffer.append("<h\(level)>\(convertRefs(title))</h\(level)>")
+                buffer.append("<h\(level)>\(convertRefs(convertEmphasis(title)))</h\(level)>")
             case .footnote(identifier: let identifier, contents: let contents):
                 buffer.append("<div><strong><a name='\(identifier)'>[\(identifier)]:</a></strong> \(contents)</div>")
             }
             return buffer
         }
 
-        internal func convertRefs(_ input: Substring) -> String {
+        internal func convertRefs(_ input: String) -> String {
             enum RefType { case image, link }
             var buffer = ""
             var refType = RefType.link
@@ -82,8 +82,34 @@ internal struct MiniMarkdownParser {
             }
             return buffer
         }
+        
+        internal func convertEmphasis(_ input: Substring) -> String {
+            var buffer = ""
+            var currentIndex = input.startIndex
+            while let (textStartIndex, content) = findNext(in: input, character: "*", from: currentIndex) {
+                buffer.append(String(content))
+                for index in input.suffix(from: input.index(after: textStartIndex)).indices {
+                    if input[index] == " " {
+                        buffer.append(String(input[textStartIndex..<index]))
+                        currentIndex = index
+                        break
+                    }
+                    if input[index] == "*" {
+                        buffer.append("<strong>")
+                        buffer.append(String(input[input.index(after: textStartIndex)..<index]))
+                        buffer.append("</strong>")
+                        currentIndex = input.index(after: index)
+                        break
+                    }
+                }
+            }
+            if currentIndex < input.endIndex {
+                buffer.append(String(input[currentIndex..<input.endIndex]))
+            }
+            return buffer
+        }
 
-        func findNext(in string: Substring, character: Character, from: String.Index) -> (String.Index, Substring)? {
+        func findNext<T: StringProtocol>(in string: T, character: Character, from: T.Index) -> (T.Index, T.SubSequence)? {
             let substring = string[from..<string.endIndex]
             guard let index = substring.firstIndex(of: character) else { return nil }
             return (index, substring[substring.startIndex..<index])
@@ -97,6 +123,8 @@ internal struct MiniMarkdownParser {
     /// - Only '###' headlines are supported
     /// - Only "- " lists are supported
     /// - Only one space between '#' and content is supported (i.e. '## hello world' not '##    hello')
+    /// - Only *bold* is supported, not ***bolder*** or __emph__
+    /// - All markdown has to start and end in the same line
     func parse(_ markdown: String) -> [Element] {
         var elements: [Element] = []
         var lineCollector: [Substring] = []

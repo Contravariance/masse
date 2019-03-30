@@ -118,6 +118,26 @@ final class MinimarkdownTests: XCTestCase {
         XCTAssertEqual(MiniMarkdownParser().parseHTML("ab\n\ncd\n\nef"),
             "<p>ab</p><p>cd</p><p>ef</p>")
     }
+    
+    func testEm1() {
+        let content = "this *hello* is brief"
+        XCTAssertEqual("<p>this <strong>hello</strong> is brief</p>", MiniMarkdownParser().parseHTML(content))
+    }
+    
+    func testEm2() {
+        let content = "this *hello* is *brief*"
+        XCTAssertEqual("<p>this <strong>hello</strong> is <strong>brief</strong></p>", MiniMarkdownParser().parseHTML(content))
+    }
+    
+    func testEm3() {
+        let content = "this * hello * is brief"
+        XCTAssertEqual("<p>this * hello * is brief</p>", MiniMarkdownParser().parseHTML(content))
+    }
+    
+    func testEm4() {
+        let content = "this *hello *is brief"
+        XCTAssertEqual("<p>this *hello *is brief</p>", MiniMarkdownParser().parseHTML(content))
+    }
 
     func testMarkdown() {
         let content = """
@@ -128,11 +148,11 @@ paragraph
 paragraph [paragraph](paragraph)
 paragraph
 
-## Second headline [^1]
+## Second *headline* [^1]
 
 - List 1
 - List 2
-- list 3
+- *list* 3
 
 ### Third headline
 
@@ -140,13 +160,13 @@ longer pargraph
 
 [^1] Footnote 1. Done.
 """
-        let expected = "<h1>First Headline</h1><p><img src='paragraph' alt='paragraph' />, paragrahp<br/>paragraph</p><p>paragraph <a href='paragraph'>paragraph</a><br/>paragraph</p><h2>Second headline <a href='#1'>[1]</a></h2><ul><li>List 1</li><li>List 2</li><li>list 3</li></ul><h3>Third headline</h3><p>longer pargraph</p><div><strong><a name='1'>[1]:</a></strong> Footnote 1. Done.</div>"
+        let expected = "<h1>First Headline</h1><p><img src='paragraph' alt='paragraph' />, paragrahp<br/>paragraph</p><p>paragraph <a href='paragraph'>paragraph</a><br/>paragraph</p><h2>Second <strong>headline</strong> <a href='#1'>[1]</a></h2><ul><li>List 1</li><li>List 2</li><li><strong>list</strong> 3</li></ul><h3>Third headline</h3><p>longer pargraph</p><div><strong><a name='1'>[1]:</a></strong> Footnote 1. Done.</div>"
         XCTAssertEqual(expected, MiniMarkdownParser().parseHTML(content))
     }
 
     private func convertHTMLRefs(_ content: String) -> String {
         let html = MiniMarkdownParser.Element.paragraph(contents: [])
-            .convertRefs(content[content.startIndex..<content.endIndex])
+            .convertRefs(String(content[content.startIndex..<content.endIndex]))
         return html
     }
 
@@ -174,5 +194,6 @@ longer pargraph
         ("testMarkdownList", testMarkdownList),
         ("testMarkdownParagraphs1", testMarkdownParagraphs1),
         ("testMarkdownParagraphs2", testMarkdownParagraphs2),
+        ("testEm1", testEm1),
         ]
 }
