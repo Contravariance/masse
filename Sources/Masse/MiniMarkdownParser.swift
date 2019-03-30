@@ -140,9 +140,9 @@ internal struct MiniMarkdownParser {
             }
             lineCollector = []
         }
-        for line in markdown.splitWithBreaks() {
+        for line in markdown.split(separator: "\n", omittingEmptySubsequences: false) {
             let headlineIndex = line.firstIndex(where: { $0 != "#" }) ?? line.startIndex
-            let headlineLevel = headlineIndex.encodedOffset - line.startIndex.encodedOffset
+            let headlineLevel = headlineIndex.utf16Offset(in: line) - line.startIndex.utf16Offset(in: line)
             let isList = line.starts(with: "- ")
             let isFootnote = line.starts(with: "[^")
             let isParagraphEnd = line.isEmpty

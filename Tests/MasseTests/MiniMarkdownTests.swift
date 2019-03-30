@@ -85,18 +85,6 @@ final class MinimarkdownTests: XCTestCase {
         )
     }
 
-    func testSplitWithBreaks() {
-        let content = "a\n\nb\nc\nd\n\ne"
-        let parsed = content.splitWithBreaks()
-        XCTAssertEqual(parsed, ["a", "", "b", "c", "d", "", "e"])
-    }
-
-    func testSplitWithBreaksNoBreaks() {
-        let content = "# test"
-        let parsed = content.splitWithBreaks()
-        XCTAssertEqual(parsed, ["# test"])
-    }
-
     func testMarkdownTitle1() {
         XCTAssertEqual(convertMarkdown("# test"), "<h1>test</h1>")
     }
@@ -187,13 +175,14 @@ longer pargraph
         ("testHTMLRefs7", testHTMLRefs7),
         ("testHTMLRefs8", testHTMLRefs8),
         ("testHTMLRefs9", testHTMLRefs9),
-        ("testSplitWithBreaks", testSplitWithBreaks),
-        ("testSplitWithBreaksNoBreaks", testSplitWithBreaksNoBreaks),
         ("testMarkdownTitle1", testMarkdownTitle1),
         ("testMarkdownTitle2", testMarkdownTitle2),
         ("testMarkdownList", testMarkdownList),
         ("testMarkdownParagraphs1", testMarkdownParagraphs1),
         ("testMarkdownParagraphs2", testMarkdownParagraphs2),
         ("testEm1", testEm1),
+        ("testEm2", testEm2),
+        ("testEm3", testEm3),
+        ("testEm4", testEm4),
         ]
 }
