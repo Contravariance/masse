@@ -55,7 +55,6 @@ goobye
  </html>
  """
         let parser = TemplateVariablesParser(contents: template, sections: [:], variables: variables, context: context)
-        print(parser.retrieve())
         XCTAssertEqual(parser.retrieve(), """
 <html>
 <b>1 of hans with age 55 in 1</b>
@@ -78,10 +77,14 @@ goobye
  - author: Bas Broek / Benedikt Terhechte
  - description: This is a long description with a really long description and another long description.
  ---
- <h1>These are the show notes</h1>
- <p> with some text
- and some more text</p>
- <strong>the end</strong>
+ # These are the show notes
+ - name: url
+ - name: url
+
+ - name: url
+
+ # New notes
+ - name: url
  """
         let parser = ConfigEntryParser(contents: entry, keys: Keys.PodcastEntry.allCases.map { $0.rawValue }, overflowKey: Keys.PodcastEntry.notes.rawValue)
         let dict = parser.retrieve()
@@ -90,13 +93,7 @@ goobye
         XCTAssertEqual(dict["file"], "something.mp3")
         XCTAssertEqual(dict["duration"], "00:33:22")
         XCTAssertEqual(dict["length"], "404")
-        XCTAssertEqual(dict["notes"], """
-<h1>These are the show notes</h1>
-<p> with some text
-and some more text</p>
-<strong>the end</strong>
-
-""")
+        XCTAssertEqual(dict["notes"], "<h1>These are the show notes</h1><ul><li>name: url</li><li>name: url</li></ul><ul><li>name: url</li></ul><h1>New notes</h1><ul><li>name: url</li></ul>")
     }
     
     

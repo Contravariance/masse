@@ -5,14 +5,8 @@ extension String {
         guard self.starts(with: beginString) && self.suffix(endString.count) == endString else {
             return nil
         }
-        let beginPosition = self.index(self.startIndex, offsetBy: beginString.count).encodedOffset
-        let endPosition = self.index(self.endIndex, offsetBy: -endString.count).encodedOffset
-        return between(beginPosition: beginPosition, endPosition: endPosition)
-    }
-
-    func between(beginPosition: Int, endPosition: Int) -> String {
-        let beginIndex = self.index(self.startIndex, offsetBy: beginPosition)
-        let endIndex = self.index(self.startIndex, offsetBy: endPosition)
-        return String(self[beginIndex..<endIndex])
+        let beginPosition = self.index(self.startIndex, offsetBy: beginString.count)
+        let endPosition = self.index(self.endIndex, offsetBy: -endString.count)
+        return String(self[beginPosition..<endPosition])
     }
 }

@@ -27,7 +27,7 @@ do {
   for fileURL in files {
       print(try String(contentsOf: fileURL), terminator: "\n", to: &output)
   }
-  output.append("\n\(runCommand)")
+  output.append("\n\(runCommand)\n")
   try output.write(to: URL(fileURLWithPath: distTarget), atomically: true, encoding: .utf8)
 } catch let error {
   print("Could not build \(distTarget)")

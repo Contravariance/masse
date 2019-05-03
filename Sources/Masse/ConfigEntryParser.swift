@@ -1,7 +1,7 @@
 struct ConfigEntryParser {
     private let metaPrefix = "- "
-    private let metaSeperator = ": "
-    private let seperator = "---"
+    private let metaSeparator = ": "
+    private let separator = "---"
     private let contents: String
     private let keys: [String]
     private let overflowKey: String?
@@ -18,26 +18,26 @@ struct ConfigEntryParser {
     }
     
     func retrieve() -> [String: String] {
-        var hasReachedSeperator = false
         var result: [String: String] = [:]
-        var notesLines = ""
+        guard let offsetToSeparator = contents.range(of: "\n\(separator)\n") else {
+            fatalError("Invalid file, no separator")
+        }
         for line in contents.components(separatedBy: .newlines) {
-            if hasReachedSeperator {
-                notesLines.append("\(line)\n")
-            } else {
-                for key in keys {
-                    let start = "\(metaPrefix)\(key)\(metaSeperator)"
-                    if line.starts(with: start),
-                        let range = line.range(of: metaSeperator) {
-                        result[key] = String(line[range.upperBound..<line.endIndex])
-                    }
-                }
-                if line == seperator && overflowKey != nil {
-                    hasReachedSeperator = true
+            for key in keys {
+                let start = "\(metaPrefix)\(key)\(metaSeparator)"
+                if line.starts(with: start),
+                    let range = line.range(of: metaSeparator) {
+                    result[key] = String(line[range.upperBound..<line.endIndex])
                 }
             }
+            if line == separator && overflowKey != nil {
+                break
+            }
         }
-        overflowKey.map { result[$0] = notesLines }
+        let remainder = String(contents[offsetToSeparator.upperBound..<contents.endIndex])
+        let parser = MiniMarkdownParser()
+        overflowKey.map { result[$0] = parser.parseHTML(remainder) }
+
         return result
     }
 }
