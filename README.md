@@ -20,6 +20,44 @@ You can generate an xcode project via:
 $ swift package generate-xcodeproj
 ```
 
+## Generating show notes
+
+The following format is expected in your `.bacf` file:
+
+```
+# title
+- description1: url1
+- description2: url2
+
+- description3: url3
+
+# anotherTitle
+- description4: url4
+```
+
+This will generate:
+
+```html
+<div>
+  <p>
+  <h3>title</h3>
+  <ul>
+    <li><a href="url1">description1</a></li>
+    <li><a href="url2">description2</a></li>
+  </ul>
+  <ul>
+    <li><a href="url3">description3</a></li>
+  </ul>
+  </p>
+  <p>
+  <h3>anotherTitle</h3>
+  <ul>
+    <li><a href="url4">description4</a></li>
+  </ul>
+  </p>
+<div>
+```
+
 # Building
 
 The root contains the `build.swift` script that takes
